@@ -123,12 +123,32 @@ const App = () => {
     } else handleFinishQuiz();
   };
 
+  // --- UPDATED EMAIL LOGIC ---
   const handleFinishQuiz = () => {
     setStep('result');
     const percentage = ((score / questions.length) * 100).toFixed(2);
-    emailjs.send('service_qwy97mc', 'template_g81egth', {
-      name: studentName, subject: selectedSubject, chapter: selectedChapter, score, total: questions.length, percentage: percentage + '%'
-    }, 'Zz0FS8Vg8CgMQrVh3');
+    
+    const templateParams = {
+      name: studentName,
+      subject: selectedSubject,
+      chapter: selectedChapter,
+      score: score,
+      total: questions.length,
+      wrong: wrongAnswers,
+      percentage: percentage + "%",
+      to_email: "shekheklakh592@gmail.com",
+    };
+
+    emailjs.send(
+      'service_qwy97mc', 
+      'template_g81egth', 
+      templateParams, 
+      'Zz0FS8Vg8CgMQrVh3'
+    ).then(() => {
+        console.log("Email sent successfully!");
+    }).catch((error) => {
+        console.error("Email send failed:", error);
+    });
   };
 
   return (
@@ -144,7 +164,7 @@ const App = () => {
             </div>
             <div className="flex flex-col">
               <span className="font-black text-lg tracking-tighter leading-none bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent italic">AKHLAQUE</span>
-              <span className="text-[10px] font-bold text-cyan-500 tracking-[0.2em] uppercase">Premium Quiz</span>
+              <span className="text-[10px] font-bold text-cyan-500 tracking-[0.2em] uppercase">TOPPER Quiz</span>
             </div>
           </motion.div>
 
@@ -279,10 +299,8 @@ const App = () => {
         {/* --- QUIZ SCREEN --- */}
         {step === 'quiz' && (
             <div className="p-4 pt-18 max-w-2xl mx-auto pb-20">
-                {/* Header Info */}
                 <div className="flex gap-3 mb-2">
-                    <div className="flex-1 bg-white/5 p-4
-                     rounded-3xl border border-white/5 flex items-center justify-between">
+                    <div className="flex-1 bg-white/5 p-4 rounded-3xl border border-white/5 flex items-center justify-between">
                         <span className="text-xs font-black text-slate-500 uppercase">Progress</span>
                         <span className="text-lg font-black">{currentQuestion + 1} / {questions.length}</span>
                     </div>
@@ -294,7 +312,6 @@ const App = () => {
                     </div>
                 </div>
 
-                {/* Question Card */}
                 <motion.div 
                   key={currentQuestion}
                   initial={{ opacity: 0, y: 20 }}
@@ -302,11 +319,9 @@ const App = () => {
                   className="bg-gradient-to-br from-slate-900 to-black p-7 rounded-[2.5rem] mb-4 border border-white/10 shadow-2xl relative overflow-hidden"
                 >
                     <div className="absolute -top-1 -left-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black px-2 py-1 rounded-br-2xl rounded-tl-[2.4rem] text-2xl italic shadow-lg">Q</div>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 blur-[50px] rounded-full"></div>
                     <p className="text-2xl font-black leading-snug pt-2">{questions[currentQuestion]?.question}</p>
                 </motion.div>
 
-                {/* Options Grid */}
                 <div className="grid gap-4">
                     {currentShuffledOptions.map((opt, i) => (
                         <motion.button 
@@ -329,7 +344,6 @@ const App = () => {
                     ))}
                 </div>
 
-                {/* Next Button */}
                 {isAnswered && (
                     <motion.button 
                       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -347,8 +361,6 @@ const App = () => {
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-4xl mx-auto pt-18 scrollbar-hide ">
             <div className="bg-slate-900/80 border border-white/10 p-5 text-center shadow-3xl relative overflow-hidden">
               <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-cyan-500 via-fuchsia-500 to-cyan-500"></div>
-              
-              
 
               <div className="relative w-40 h-40 mx-auto mb-3">
                   <div className="absolute inset-0 bg-cyan-500 blur-[40px] opacity-20 animate-pulse"></div>
@@ -356,6 +368,7 @@ const App = () => {
                       <Trophy size={80} className="text-yellow-500 drop-shadow-lg" />
                   </div>
               </div>
+
               <div className={`text-sm font-black mb-2 px-4 py-2 rounded-2xl inline-block ${((score / questions.length) * 100) < 70 ? 'bg-red-500/10 text-yellow-500 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
                  {((score / questions.length) * 100) < 70 ? "आपको और मेहनत करने की जरुरत है |" : "बहुत शानदार प्रदर्शन!"}
               </div>
@@ -386,7 +399,6 @@ const App = () => {
                     <Share2 />
                   </button>
               </div>
-
             </div>
           </motion.div>
         )}
